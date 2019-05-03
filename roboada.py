@@ -19,13 +19,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import glob
-import os
+import glob, os, sys
 
 if not os.path.exists('result'):
     os.makedirs('result')
 
-for filename in glob.glob("*.ads"):
+filenames = "*.ads"
+if len(sys.argv) > 1:
+    if sys.argv[1] == 'all':
+        filenames = "*.ad*"
+    elif sys.argv[1] == "internal":
+        filenames = "*.adb"
+
+for filename in glob.glob(filenames):
+    extension = os.path.splitext(filename)[1]
     # read whole file to list of lines
     with open(filename) as fn:
         content = fn.readlines()
@@ -35,16 +42,27 @@ for filename in glob.glob("*.ads"):
     while i < len(content):
         line = content[i].strip()
         if line.startswith("package") and packagename == "":
-            packagename = line.split(" ")[1]
+            if extension == ".ads":
+                packagename = line.split(" ")[1]
+            else:
+                packagename = line.split(" ")[2]
         doclines = []
-        if not line.startswith("--") and (line.startswith("procedure") or line.startswith("function") or line.find(":") > 0) and packagename != "":
+        if not line.startswith("--") and (line.startswith("procedure") or line.startswith("function") or line.find(": ") > 0) and packagename != "":
             # parse function and procedures
+            functionname = ""
             if line.startswith("procedure") or line.startswith("function"):
                 if line.find("(") > -1:
                     line = line[: line.find("(")]
-                doclines.append("-- ****f* " + packagename + "/" + line.split(" ")[1] + "\n");
+                functionname = line.split(" ")[1]
+                if extension == ".ads":
+                    doclines.append("-- ****f* " + packagename + "/" + functionname + "\n");
+                else:
+                    doclines.append("-- ****if* " + packagename + "/" + functionname + "\n");
             else:
-                doclines.append("-- ****v* " + packagename + "/" + line[:line.find(":")] + "\n");
+                if extension == ".ads":
+                    doclines.append("-- ****v* " + packagename + "/" + line[:line.find(":")] + "\n");
+                else:
+                    doclines.append("-- ****iv* " + packagename + "/" + line[:line.find(":")] + "\n");
             newindex = i - 1
             if content[newindex].strip().startswith("-- ****"):
                 newindex = i
@@ -65,18 +83,28 @@ for filename in glob.glob("*.ads"):
                 while bracketsopen > 0:
                     i += 1
                     bracketsopen += (content[i].count("(") - content[i].count(")"))
-                while content[i].find(";\n") == -1:
-                    i += 1
+                if extension == ".ads":
+                    while content[i].find(";\n") == -1:
+                        i += 1
+                else:
+                    while content[i].find("is\n") == -1 and content[i].find(";\n") == -1:
+                        i += 1
+                    if content[i].find(";\n") != -1:
+                        functionname = ""
                 bracketsopen = content[i].count("(") - content[i].count(")")
                 while bracketsopen > 0:
                     i += 1
                     bracketsopen += (content[i].count("(") - content[i].count(")"))
-                while content[i + 1].strip().startswith("pragma"):
-                    i += 1
+                if len(content) > i + 1:
+                    while content[i + 1].strip().startswith("pragma"):
+                        i += 1
             else:
                 while content[i].find(";") == -1:
                     i += 1
-            newindex = i + 1
+            if len(content) > i + 1:
+                newindex = i + 1
+            else:
+                newindex = i
             if content[newindex].strip().startswith("--") and len(doclines) < 3:
                 doclines = []
                 doclines.append("-- FUNCTION\n")
@@ -88,10 +116,14 @@ for filename in glob.glob("*.ads"):
                     content.insert(i + j, doclines[j])
                 i = i + len(doclines) - 1
             content.insert(i + 1, "-- ****\n")
+            if extension == ".adb" and functionname != "":
+                while content[i].strip() != "end " + functionname + ";":
+                    i += 1
             i += 2
-            line = content[i].strip()
-            if not line.startswith("--") and (line.startswith("procedure") or line.startswith("function") or line.find(":") > 0):
-                i -= 1
+            if len(content) > i:
+                line = content[i].strip()
+                if not line.startswith("--") and (line.startswith("procedure") or line.startswith("function") or line.find(":") > 0):
+                    i -= 1
         i += 1
     # save data to new file
     with open("result/" + filename, "w") as newfile:
