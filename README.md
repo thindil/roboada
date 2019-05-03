@@ -9,10 +9,16 @@ ultra-hyper-secret project :)
 
 ## Usage
 
-This file will convert .ads files from this same directory where this script
-is. Modified files will be placed in subdirectory *result* in this same
-directory. Thus to use it, put it to directory with your code (or copy your
-code to directory where scrip is) and type: `./roboada.py`
+This file will convert Ada code files (*.ads* and *.adb*) from this same
+directory where this script is. Modified files will be placed in subdirectory
+*result* in this same directory. Thus to use it, put it to directory with your
+code (or copy your code to directory where scrip is) and type:
+
+* If you want to document only *.ads* files: `./roboada.py`
+* If you want to document only *.adb* files: `./roboada.py internal`
+* If you want to document all Ada source (*.ads* and *.adb*):
+  `./roboada.py all`
+
 
 To create RoboDoc documentation from modified sources, you must use as a
 RoboDoc configuration file *robodocada.rc*. Thus, after creating documented
