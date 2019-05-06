@@ -4,3 +4,17 @@ remark markers:
   --
 end markers:
   -- ****
+keywords:
+  procedure
+  function
+  return
+  is
+  type
+  record
+  pragma
+  end
+  package
+  new
+  access
+  not
+  null
