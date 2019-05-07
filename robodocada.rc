@@ -18,3 +18,10 @@ keywords:
   access
   not
   null
+  subtype
+  renames
+  range
+  out
+  in
+  constant
+  private
