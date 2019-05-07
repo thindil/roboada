@@ -1,13 +1,17 @@
 ## General information
 
+RoboAda is the bundle of small Python scripts which helps create RoboDoc
+documentation from Ada code. At this moment here are available two scritps:
+
+## Roboada.py
+
 RoboAda its short for *Add RoboDoc templates to Ada code*. It is very simple,
 ugly and not optimized script to add RoboDoc documentation to Ada specification
 files (.ads) based on existing comments in them. It support comments written
-above and below code. At this moment it generate documentation only for
-functions/procedures and variables. This files are part of other,
-ultra-hyper-secret project :)
+above and below code. This files are part of other, ultra-hyper-secret project
+:)
 
-## Usage
+### Usage
 
 This file will convert Ada code files (*.ads* and *.adb*) from this same
 directory where this script is. Modified files will be placed in subdirectory
@@ -19,15 +23,33 @@ code (or copy your code to directory where scrip is) and type:
 * If you want to document all Ada source (*.ads* and *.adb*):
   `./roboada.py all`
 
+## Robofix.py
 
-To create RoboDoc documentation from modified sources, you must use as a
-RoboDoc configuration file *robodocada.rc*. Thus, after creating documented
-code in first step, to create documentation with many files type: `robodoc
+Robodoc have problems with Ada attributes: it is visible when option
+`--syntaxcolors` is used. To fix this problem, you can use this script. It fix
+all attributes in generated HTML files.
+
+### Usage
+
+It scan selected directory for HTML files and if it find inside them incorrect
+Ada attribute, the script will replace it with valid HTML code and replace old
+HTML file with new. It can take optional argument which will be used as name of
+directory to scan.
+
+* `./robofix.py` will scan current directory for HTML files and correct them.
+* `./robofix.py docs` will scan subdirectory *docs* of current directory for
+  HTML files and correct them
+
+## Robodocada.rc
+
+To create RoboDoc documentation from Ada sources, you must use as a RoboDoc
+configuration file *robodocada.rc*. Thus, after creating documented code with
+**roboada.py**, to create documentation with many files type: `robodoc
 --src result --doc docs --multidoc --rc robodocada.rc`.
 
 ## License
 
-File **roboada.py** is distributed under MIT license.
+Files **roboada.py** and **robofix.py** are distributed under MIT license.
 File **robodocada.rc** is in public domain.
 
 ## Others
