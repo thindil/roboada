@@ -19,8 +19,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# FIXME: Can't detect end of internal subprograms with another subprograms inside.
-
 import glob, os, sys
 
 if not os.path.exists('result'):
@@ -96,19 +94,24 @@ for filename in glob.glob(filenames):
                 else:
                     while content[i].find("is\n") == -1 and content[i].find(";\n") == -1:
                         i += 1
-                    if content[i].find(";\n") != -1:
-                        functionname = ""
                 bracketsopen = content[i].count("(") - content[i].count(")")
                 while bracketsopen > 0:
                     i += 1
                     bracketsopen += (content[i].count("(") - content[i].count(")"))
+                if extension == ".adb":
+                    if content[i].find(";\n") != -1:
+                        functionname = ""
                 if len(content) > i + 1:
                     while content[i + 1].strip().startswith("pragma"):
                         i += 1
             elif line.startswith("type") or line.startswith("subtype") or line.startswith("package"):
                 if line.find("record") > -1 or content[i + 1].find("record") > -1:
+                    oldi = i
                     while content[i].find("end record;") == -1:
                         i += 1
+                        if i == len(content):
+                            i = oldi
+                            break
                 else:
                     bracketsopen = content[i].count("(") - content[i].count(")")
                     while bracketsopen > 0:
