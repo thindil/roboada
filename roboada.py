@@ -19,6 +19,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# TODO: support for generics
+# TODO: support for private packages
+# TODO: move end line detection to function
+# TODO: better detection of end of functions declarations
+# FIXME: overrided procedures marked as variables
+# FIXME: don't detect types if they are one after one
+
 import glob, os, sys
 
 if not os.path.exists('result'):
@@ -30,6 +37,13 @@ if len(sys.argv) > 1:
         filenames = "*.ad*"
     elif sys.argv[1] == "internal":
         filenames = "*.adb"
+
+def CountBrackets(i, content):
+    bracketsopen = content[i].count("(") - content[i].count(")")
+    while bracketsopen > 0:
+        i += 1
+        bracketsopen += (content[i].count("(") - content[i].count(")"))
+    return i
 
 for filename in glob.glob(filenames):
     extension = os.path.splitext(filename)[1]
@@ -84,25 +98,32 @@ for filename in glob.glob(filenames):
             i = i + len(doclines)
             line = content[i].strip()
             if line.startswith("procedure") or line.startswith("function"):
-                bracketsopen = content[i].count("(") - content[i].count(")")
-                while bracketsopen > 0:
-                    i += 1
-                    bracketsopen += (content[i].count("(") - content[i].count(")"))
+                i = CountBrackets(i, content)
                 if extension == ".ads":
                     while content[i].find(";\n") == -1:
                         i += 1
                 else:
                     while content[i].find("is\n") == -1 and content[i].find(";\n") == -1:
                         i += 1
-                bracketsopen = content[i].count("(") - content[i].count(")")
-                while bracketsopen > 0:
-                    i += 1
-                    bracketsopen += (content[i].count("(") - content[i].count(")"))
+                i = CountBrackets(i, content)
                 if extension == ".adb":
                     if content[i].find(";\n") != -1:
                         functionname = ""
                 if len(content) > i + 1:
-                    while content[i + 1].strip().startswith("pragma"):
+                    while content[i + 1].strip().startswith("pragma") or content[i + 1].strip().startswith("is") or content[i + 1].strip().startswith("with"):
+                        i += 1
+                i = CountBrackets(i, content)
+                if len(content) > i + 1:
+                    while content[i + 1].find("=>") > -1:
+                        i += 1
+                if content[i].find("=>\n") > -1:
+                    i += 1
+                i = CountBrackets(i, content)
+                if extension == ".ads":
+                    while content[i].find(";\n") == -1:
+                        i += 1
+                else:
+                    while content[i].find("is\n") == -1 and content[i].find(";\n") == -1:
                         i += 1
             elif line.startswith("type") or line.startswith("subtype") or line.startswith("package"):
                 if line.find("record") > -1 or content[i + 1].find("record") > -1:
