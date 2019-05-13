@@ -37,22 +37,22 @@ for filename in glob.glob(directory + "/*.html"):
                 content[i] = re.sub("<span class=\"squote\">'\w+", "<span class=\"keyword\">" + keyword + "</span>", content[i]);
             k = i
             while content[k].strip() != "</pre>":
-                result2 = re.search("(?!\">)(\)|;|:)+(?!</span>)", content[k])
+                result2 = re.search("(?!\">)(\)|;|:=|:|\()+(?!</span>)", content[k])
                 while result2 != None:
                     endline = content[k][result2.span()[1]:]
-                    content[k] = content[k][:result2.span()[0]]
+                    content[k] = content[k][:result2.span()[0]] + "<span class=\"sign\">"
                     for j in range(len(result2.group())):
-                        content[k] += "<span class=\"sign\">" + result2.group()[j] + "</span>"
-                    content[k] += endline
-                    result2 = re.search("(?!\">)(\)|;|:)+(?!</span>)", content[k])
-                result2 = re.search("(?!\">)(\sis\s|\spragma\s|\sreturn\s)+(?!</span>)", content[k])
+                        content[k] += result2.group()[j]
+                    content[k] += "</span>" + endline
+                    result2 = re.search("(?!\">)(\)|;|:=|:|\()+(?!</span>)", content[k])
+                result2 = re.search("(?!\">)(\sis\s|\spragma\s|\sreturn\s|\sconstant\s)+(?!</span>)", content[k])
                 while result2 != None:
                     endline = content[k][result2.span()[1]:]
-                    content[k] = content[k][:result2.span()[0]]
+                    content[k] = content[k][:result2.span()[0]] + "<span class=\"keyword\">"
                     for j in range(len(result2.group())):
-                        content[k] += "<span class=\"keyword\">" + result2.group()[j] + "</span>"
-                    content[k] += endline
-                    result2 = re.search("(?!\">)(\sis\s|\spragma\s|\sreturn\s)+(?!</span>)", content[k])
+                        content[k] += result2.group()[j]
+                    content[k] += "</span>" + endline
+                    result2 = re.search("(?!\">)(\sis\s|\spragma\s|\sreturn\s|\sconstant\s)+(?!</span>)", content[k])
                 k += 1
                 if k == len(content):
                     break
