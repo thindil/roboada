@@ -20,7 +20,7 @@
 # SOFTWARE.
 
 # TODO Better support for declarations in packages bodies
-# FIXME types with declaration in multilines (arrays, enumerations)
+# FIXME generic with procedures
 
 import glob, os, sys
 
@@ -70,8 +70,13 @@ for filename in glob.glob(filenames):
                 packagename = line.split(" ")[2]
             i += 1
             continue
-        if line.startswith("--") or packagename == "" or line == "" or line.startswith("private") or line.startswith("use") or line.startswith("end") or line.startswith("generic"):
+        if line.startswith("--") or packagename == "" or line == "" or line.startswith("private") or line.startswith("use") or line.startswith("end") or line.startswith("generic") or line.startswith("new") or line.startswith("pragma"):
             i += 1
+            if line.startswith("new") and i < len(content):
+                i = CountBrackets(i, content)
+                while content[i].find(";\n") == -1:
+                    i += 1
+                i += 1
             continue
         doclines = []
         words = line.split(" ")
@@ -147,6 +152,9 @@ for filename in glob.glob(filenames):
                 if (content[i].find("record") > -1 and content[i].find("null") == -1) or (content[i + 1].find("record") > -1 and content[i + 1].find("null") == -1):
                     while content[i].find("end record;") == -1:
                         i += 1
+            i = GoToEnd(i, content)
+            while content[i].find(";") == -1:
+                i += 1
             i = GoToEnd(i, content)
         else:
             while content[i].find(";") == -1:
