@@ -4,6 +4,9 @@ remark markers:
   --
 end markers:
   -- ****
+headertypes:
+  f Subprograms robo_subprograms
+  h Packages robo_packages
 keywords:
   procedure
   function
