@@ -66,8 +66,8 @@ def fixdocs(directory):
     for dirname in glob.glob(directory + "*/"):
         fixdocs(dirname)
 
-docsdir = "docs"
-configfile = "others/robodocada.rc"
+docsdir = "."
+configfile = "robodocada.rc"
 
 if len(sys.argv) > 1:
     configfile = sys.argv[1]
