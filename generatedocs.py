@@ -18,10 +18,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-""" Generate documentation and fix syntax highligthning for Ada """
+""" Generate documentation and fix syntax highlightning for Ada """
 
 import glob
 import re
+import subprocess
 import sys
 
 def fixdocs(directory):
@@ -61,8 +62,17 @@ def fixdocs(directory):
         with open(filename, "w") as newfile:
             for line in content:
                 newfile.write("%s" % line)
+        # fix documentation in any subdirectory too
+    for dirname in glob.glob(directory + "*/"):
+        fixdocs(dirname)
+
+docsdir = "docs"
+configfile = "others/robodocada.rc"
 
 if len(sys.argv) > 1:
-    fixdocs(sys.argv[1])
-else:
-    fixdocs(".")
+    configfile = sys.argv[1]
+    if len(sys.argv) > 2:
+        docsdir = sys.argv[2]
+
+subprocess.call(["robodoc", "--rc", configfile])
+fixdocs(docsdir)
