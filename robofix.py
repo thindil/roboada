@@ -18,45 +18,51 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+""" Generate documentation and fix syntax highligthning for Ada """
 
-import glob, re, sys
+import glob
+import re
+import sys
 
-directory = "."
-if len(sys.argv) > 1:
-    directory = sys.argv[1]
-
-for filename in glob.glob(directory + "/*.html"):
-    # read whole file to list of lines
-    with open(filename) as fn:
-        content = fn.readlines()
-    for i in range(len(content)):
-        result = re.search("<span class=\"squote\">'\w+'*", content[i])
-        if result != None:
-            keyword = result.group()[21:]
-            if keyword[len(keyword) - 1] != "'":
-                content[i] = re.sub("<span class=\"squote\">'\w+", "<span class=\"keyword\">" + keyword + "</span>", content[i]);
-            k = i
-            while content[k].strip() != "</pre>":
-                result2 = re.search("(?!\">)(\)|;|:=|:|\()+(?!</span>)", content[k])
-                while result2 != None:
-                    endline = content[k][result2.span()[1]:]
-                    content[k] = content[k][:result2.span()[0]] + "<span class=\"sign\">"
-                    for j in range(len(result2.group())):
-                        content[k] += result2.group()[j]
-                    content[k] += "</span>" + endline
+def fixdocs(directory):
+    """ Fix all generated documentation in selected directory. """
+    for filename in glob.glob(directory + "/*.html"):
+        # read whole file to list of lines
+        with open(filename) as fn:
+            content = fn.readlines()
+        for i in range(len(content)):
+            result = re.search("<span class=\"squote\">'\w+'*", content[i])
+            if result is not None:
+                keyword = result.group()[21:]
+                if keyword[len(keyword) - 1] != "'":
+                    content[i] = re.sub("<span class=\"squote\">'\w+", "<span class=\"keyword\">" + keyword + "</span>", content[i]);
+                k = i
+                while content[k].strip() != "</pre>":
                     result2 = re.search("(?!\">)(\)|;|:=|:|\()+(?!</span>)", content[k])
-                result2 = re.search("(?!\">)(\sis\s|\spragma\s|\sreturn\s|\sconstant\s)+(?!</span>)", content[k])
-                while result2 != None:
-                    endline = content[k][result2.span()[1]:]
-                    content[k] = content[k][:result2.span()[0]] + "<span class=\"keyword\">"
-                    for j in range(len(result2.group())):
-                        content[k] += result2.group()[j]
-                    content[k] += "</span>" + endline
+                    while result2 is not None:
+                        endline = content[k][result2.span()[1]:]
+                        content[k] = content[k][:result2.span()[0]] + "<span class=\"sign\">"
+                        for j in range(len(result2.group())):
+                            content[k] += result2.group()[j]
+                        content[k] += "</span>" + endline
+                        result2 = re.search("(?!\">)(\)|;|:=|:|\()+(?!</span>)", content[k])
                     result2 = re.search("(?!\">)(\sis\s|\spragma\s|\sreturn\s|\sconstant\s)+(?!</span>)", content[k])
-                k += 1
-                if k == len(content):
-                    break
-    # save fixed file
-    with open(filename, "w") as newfile:
-        for line in content:
-            newfile.write("%s" % line)
+                    while result2 is not None:
+                        endline = content[k][result2.span()[1]:]
+                        content[k] = content[k][:result2.span()[0]] + "<span class=\"keyword\">"
+                        for j in range(len(result2.group())):
+                            content[k] += result2.group()[j]
+                        content[k] += "</span>" + endline
+                        result2 = re.search("(?!\">)(\sis\s|\spragma\s|\sreturn\s|\sconstant\s)+(?!</span>)", content[k])
+                    k += 1
+                    if k == len(content):
+                        break
+        # save fixed file
+        with open(filename, "w") as newfile:
+            for line in content:
+                newfile.write("%s" % line)
+
+if len(sys.argv) > 1:
+    fixdocs(sys.argv[1])
+else:
+    fixdocs(".")
