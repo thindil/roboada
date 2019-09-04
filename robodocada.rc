@@ -5,7 +5,8 @@ remark markers:
 end markers:
   -- ****
 headertypes:
-  h Packages robo_packages 4
+  h Packages robo_packages 5
+  a Tasks robo_tasks 4
   t Types robo_types 3
   v Variables robo_variables 2
   e Exceptions robo_exceptions 1
