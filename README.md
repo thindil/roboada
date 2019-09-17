@@ -39,17 +39,17 @@ optional arguments: first is path (absolute or relative) to the configuration
 file for ROBODoc, second is the path (absolute or relative) to the directory
 to scan.
 
-* `./robofix.py` will generate documentation by using file **robodocada.rc**
-from this same directory and then it will scan current directory (and its
-subdirectories) for HTML files and correct them if needed.
-* `./robofix.py others/robodocada.rc` will generate documentation by using
+* `./generatedocs.py` will generate documentation by using file
+**robodocada.rc** from this same directory and then it will scan current
+directory (and its subdirectories) for HTML files and correct them if needed.
+* `./generatedocs.py others/robodocada.rc` will generate documentation by using
 the ROBODoc configuration file **others/robodocada.rc** and then it will scan
 current directory (and its subdirectories) for HTML files and correct them
 if needed.
-* `./robofix.py others/robodocada.rc docs` will generate documentation by
-using the ROBODoc configuration file **others/robodocada.rc** and then it will
-scan subdirectory *docs* (and its subdirectories) of current directory for
-HTML files and correct them
+* `./generatedocs.py others/robodocada.rc docs` will generate documentation
+by using the ROBODoc configuration file **others/robodocada.rc** and then it
+will scan subdirectory *docs* (and its subdirectories) of current directory for
+HTML files and correct them.
 
 ## Robodocada.rc
 
