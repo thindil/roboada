@@ -39,3 +39,5 @@ keywords:
   constant
   private
   exception
+  task
+  entry
