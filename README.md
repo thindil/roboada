@@ -51,6 +51,11 @@ by using the ROBODoc configuration file **others/robodocada.rc** and then it
 will scan subdirectory *docs* (and its subdirectories) of current directory for
 HTML files and correct them.
 
+## Generatedocs.tcl
+
+It is Tcl version of above script. It can be a bit better than Python version.
+It usage is exactly that same like Python version.
+
 ## Robodocada.rc
 
 To create ROBODoc documentation from Ada sources, you must use as a ROBODoc
