@@ -65,7 +65,9 @@ configuration file *robodocada.rc*. Thus, after creating documented code with
 
 ## License
 
-Files **roboada.py** and **generatedocs.py** are distributed under MIT license.
+Files **roboada.py**, **generatedocs.py**, **generatedocs.tcl** are distributed
+under MIT license.
+
 File **robodocada.rc** is in public domain.
 
 ## Others
